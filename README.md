@@ -10,4 +10,7 @@
 ### 参数说明
 1. `question`: 你想要爬取的问题id,例如在这个问题中`question`就是`296631231` `https://www.zhihu.com/question/296631231`
 2. `votenum`: 将会过滤掉点赞数小于该值的回答.
-	例如：`python main.py --question 296631231 --votenum 200`
+	例如：`python main.py --question 296631231 --votenum 1000`
+
+### 注意
+在进行爬虫的时候如果出现了长时间下载图片无响应，可以换个网络重试。

@@ -5,9 +5,9 @@ import grequests
 import threading
 import os
 import click
-import sys
+# import sys
 
-sys.setrecursionlimit(1000000)  # 例如这里设置为一百万
+# sys.setrecursionlimit(1000000)  # 例如这里设置为一百万
 
 BASE_URL = "https://www.zhihu.com/api/v4/questions/{}/answers?include=data%5B*%5D.is_normal%2Cadmin_closed_comment%2Creward_info%2Cis_collapsed%2Cannotation_action%2Cannotation_detail%2Ccollapse_reason%2Cis_sticky%2Ccollapsed_by%2Csuggest_edit%2Ccomment_count%2Ccan_comment%2Ccontent%2Ceditable_content%2Cvoteup_count%2Creshipment_settings%2Ccomment_permission%2Ccreated_time%2Cupdated_time%2Creview_info%2Crelevant_info%2Cquestion%2Cexcerpt%2Crelationship.is_authorized%2Cis_author%2Cvoting%2Cis_thanked%2Cis_nothelp%2Cis_labeled%2Cis_recognized%2Cpaid_info%2Cpaid_info_content%3Bdata%5B*%5D.mark_infos%5B*%5D.url%3Bdata%5B*%5D.author.follower_count%2Cbadge%5B*%5D.topics&limit={}"
 IMG_BASE_URL = "https://pic3.zhimg.com{}"
@@ -20,13 +20,7 @@ class ZhSpider(object):
         :param question_id: 问题ID，列表形式
         :param min_voted_num: 将会过滤掉点赞数小于这个值得回答
         """
-        # pass
-        # self.question_urls = [
-        #     BASE_URL.format('333026642', 10),
-        # BASE_URL.format('26037846', 10)
-        # ]
         self.min_voted_num = min_voted_num
-        # self.question_url = [BASE_URL.format(i, 10) for i in answer_id]
         self.question_url = BASE_URL.format(question_id, 3)
         self.headers = {"User-Agent": "Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9.1.6) ",
                         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -44,7 +38,6 @@ class ZhSpider(object):
             print("已创建目录 'images', 所有的图片将会保存在该目录下")
 
         print('start')
-        # for url in self.question_urls:
         response = self.get(self.question_url)
         next_page_answer_url = self.parse(response)
         while next_page_answer_url is not None:
@@ -77,10 +70,14 @@ class ZhSpider(object):
                 incomplete_urls = re.findall(
                     r'https:\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?',
                     answer_html_content)
-
-                # 使用集合去除重复的图片
-                img_urls = set([IMG_BASE_URL.format(img_url) for _, img_url in incomplete_urls])
-                # print(img_urls)
+                # 使用集合去除重复图片
+                tmp_img_urls = set([later_url for _, later_url in incomplete_urls])
+                # 过滤高清大图
+                img_urls = []
+                for img_url in tmp_img_urls:
+                    if img_url[-5] == 'r':
+                        img_urls.append(IMG_BASE_URL.format(img_url))
+                print("开始下载图片:{}张.".format(len(img_urls)))
                 rs = (grequests.get(u, headers=self.headers, timeout=5) for u in img_urls)
                 res = grequests.map(rs)
                 # 过滤掉404响应
@@ -109,7 +106,7 @@ class ZhSpider(object):
 
 
 @click.command()
-@click.option('--question', default="299205851", help="问题id", type=str)
+@click.option('--question', default="296631231", help="问题id", type=str)
 @click.option('--votenum', default=800, help="最小点赞数,将会过滤掉点赞数小于该值得回答", type=int)
 def start(question, votenum):
     """
