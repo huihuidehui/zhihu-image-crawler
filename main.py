@@ -82,9 +82,11 @@ class ZhSpider(object):
                 res = grequests.map(rs)
                 # 过滤掉404响应
                 res = [i for i in res if i.status_code == 200]
-                save_img_t = threading.Thread(target=self.save_imgs, args=(res,))
-                print("开始保存图片: {}张".format(len(res)))
-                save_img_t.start()
+                print("开始保存图片: {}张.".format(len(res)))
+                self.save_imgs(res)
+                # save_img_t = threading.Thread(target=self.save_imgs, args=(res,))
+                # print("开始保存图片: {}张".format(len(res)))
+                # save_img_t.start()
             else:
                 # 终止爬虫
                 return None
