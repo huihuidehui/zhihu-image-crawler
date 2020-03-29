@@ -78,12 +78,21 @@ class ZhSpider(object):
                     if img_url[-5] == 'r':
                         img_urls.append(IMG_BASE_URL.format(img_url))
                 print("开始下载图片:{}张.".format(len(img_urls)))
-                rs = (grequests.get(u, headers=self.headers, timeout=5) for u in img_urls)
-                res = grequests.map(rs)
-                # 过滤掉404响应
-                res = [i for i in res if i.status_code == 200]
-                print("开始保存图片: {}张.".format(len(res)))
-                self.save_imgs(res)
+
+                tmp_img_urls = []
+                while len(img_urls) > 0:
+                    if len(img_urls) > 5:
+                        tmp_img_urls = img_urls[0:5]
+                        img_urls = img_urls[5:]
+                    else:
+                        tmp_img_urls = img_urls
+                        img_urls = []
+                    rs = (grequests.get(u, headers=self.headers, timeout=5) for u in tmp_img_urls)
+                    res = grequests.map(rs)
+                    # 过滤掉404响应
+                    res = [i for i in res if i.status_code == 200]
+                    print("开始保存图片: {}张.".format(len(res)))
+                    self.save_imgs(res)
                 # save_img_t = threading.Thread(target=self.save_imgs, args=(res,))
                 # print("开始保存图片: {}张".format(len(res)))
                 # save_img_t.start()
