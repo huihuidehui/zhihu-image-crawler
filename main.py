@@ -87,9 +87,9 @@ class ZhSpider(object):
                 # save_img_t = threading.Thread(target=self.save_imgs, args=(res,))
                 # print("开始保存图片: {}张".format(len(res)))
                 # save_img_t.start()
-            else:
-                # 终止爬虫
-                return None
+        else:
+            # 终止爬虫
+            return None
 
         if not dic.get('paging').get('is_end'):
             next_url = dic.get('paging').get('next')
@@ -109,6 +109,7 @@ class ZhSpider(object):
 
 @click.command()
 @click.option('--question', default="296631231", help="问题id", type=str)
+# @click.option('--question', default="313825759", help="问题id", type=str)
 @click.option('--votenum', default=800, help="最小点赞数,将会过滤掉点赞数小于该值得回答", type=int)
 def start(question, votenum):
     """
