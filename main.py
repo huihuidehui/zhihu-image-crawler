@@ -2,10 +2,9 @@
 import json
 import re
 import grequests
-import threading
 import os
 import click
-# import sys
+import progressbar
 
 # sys.setrecursionlimit(1000000)  # 例如这里设置为一百万
 
@@ -55,7 +54,7 @@ class ZhSpider(object):
 
     def parse(self, response):
         print("开始新的一页")
-        print("开始处理响应...")
+        print("开始处理回答...")
         dic = json.loads(response.text)
         # 此相应中的回答,过滤掉点赞数小于800的回答
         answers_list = [
@@ -74,24 +73,31 @@ class ZhSpider(object):
                 tmp_img_urls = set([later_url for _, later_url in incomplete_urls])
                 # 过滤高清大图
                 img_urls = []
+
+
                 for img_url in tmp_img_urls:
                     if img_url[-5] == 'r':
                         img_urls.append(IMG_BASE_URL.format(img_url))
-                print("开始下载图片:{}张.".format(len(img_urls)))
+                print("开始下载回答中的图片:{}张....".format(len(img_urls)))
 
                 tmp_img_urls = []
+                total_img_url = len(img_urls)
+                bar = progressbar.ProgressBar(max_value=total_img_url)
+                # bar.update(i)
                 while len(img_urls) > 0:
                     if len(img_urls) > 5:
                         tmp_img_urls = img_urls[0:5]
                         img_urls = img_urls[5:]
+                        bar.update(total_img_url - len(img_urls))
                     else:
                         tmp_img_urls = img_urls
                         img_urls = []
+                        bar.update(total_img_url - len(img_urls))
                     rs = (grequests.get(u, headers=self.headers, timeout=5) for u in tmp_img_urls)
                     res = grequests.map(rs)
                     # 过滤掉404响应
                     res = [i for i in res if i.status_code == 200]
-                    print("开始保存图片: {}张.".format(len(res)))
+                    # print("开始保存图片: {}张.".format(len(res)))
                     self.save_imgs(res)
                 # save_img_t = threading.Thread(target=self.save_imgs, args=(res,))
                 # print("开始保存图片: {}张".format(len(res)))
@@ -113,7 +119,7 @@ class ZhSpider(object):
         for i in data:
             with open('images/' + i.request.url[-18:], 'wb') as f:
                 f.write(i.content)
-        print("成功保存图片：{}张.".format(len(data)))
+        # print("成功保存图片：{}张.".format(len(data)))
 
 
 @click.command()

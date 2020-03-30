@@ -5,5 +5,8 @@ gevent==1.4.0
 greenlet==0.4.15
 grequests==0.4.0
 idna==2.9
+progressbar2==3.50.1
+python-utils==2.4.0
 requests==2.23.0
+six==1.14.0
 urllib3==1.25.8
