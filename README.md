@@ -13,4 +13,10 @@
 	例如：`python main.py --question 296631231 --votenum 1000`
 
 ### 注意
+
 在进行爬虫的时候如果出现了长时间下载图片无响应，可以换个网络重试。
+
+### 运行截图
+
+<img src="https://www.huihuidehui.com/postimg/20200330184235.png" style="zoom: 25%;" />
+
