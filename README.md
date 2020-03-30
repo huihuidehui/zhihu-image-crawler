@@ -1,5 +1,5 @@
 ## 爬取知乎某个问题下所有回答的图片
-使用的python模块包括，grequest、click.[参考文章](https://www.huihuidehui.top/posts/4fcb5fd7.html)
+使用的python模块包括，grequest、click.[参考文章](https://www.huihuidehui.com/posts/4fcb5fd7.html)
 
 ## 使用
 
