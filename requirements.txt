@@ -9,4 +9,4 @@ progressbar2==3.50.1
 python-utils==2.4.0
 requests==2.23.0
 six==1.14.0
-urllib3==1.25.8
+urllib3==1.26.5
